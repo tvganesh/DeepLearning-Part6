@@ -441,7 +441,7 @@ def backwardPropagationDeep(AL, Y, caches, dropoutMat, lambd=0, keep_prob=0, hid
     if lambd==0:
        gradients["dA" + str(L)], gradients["dW" + str(L)], gradients["db" + str(L)] = layerActivationBackward(dAL, current_cache, 
                                             Y, activationFunc = outputActivationFunc)
-    else:
+    else: #Regularization
        gradients["dA" + str(L)], gradients["dW" + str(L)], gradients["db" + str(L)] = layerActivationBackwardWithReg(dAL, current_cache, 
                                             Y, lambd, activationFunc = outputActivationFunc)
     
@@ -461,8 +461,10 @@ def backwardPropagationDeep(AL, Y, caches, dropoutMat, lambd=0, keep_prob=0, hid
            # In the reverse direction use the dame dropout matrix
            # Random dropout
            # Multiply dA'l' with the dropoutMat and divide to keep the expected value same
-           D = dropoutMat["D" + str(l+1)]           
-           gradients['dA'+str(l+2)]= np.multiply(gradients['dA'+str(l+2)],D)                                          
+           D = dropoutMat["D" + str(l+1)]          
+           # Drop some dAl's
+           gradients['dA'+str(l+2)]= np.multiply(gradients['dA'+str(l+2)],D)          
+           # Divide by keep_prob to keep expected value same                                
            gradients['dA'+str(l+2)] = np.divide(gradients['dA'+str(l+2)],keep_prob) 
            
            dA_prev_temp, dW_temp, db_temp = layerActivationBackward(gradients['dA'+str(l+2)], current_cache, Y, keep_prob=0, activationFunc = hiddenActivationFunc) 

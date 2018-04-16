@@ -236,7 +236,9 @@ function [AL forward_caches activation_caches dropoutMat] = forwardPropagationDe
         [A forward_cache activation_cache] = layerActivationForward(A_prev, W,b, activationFunc=hiddenActivationFunc);
         D=rand(size(A)(1),size(A)(2));
         D = (D < keep_prob) ;
-        A= A .* D;                                      
+        # Multiply by DropoutMat
+        A= A .* D;    
+        # Divide by keep_prob to keep expected value same        
         A = A ./ keep_prob; 
         # Store D
         dropoutMat{l}=D;
@@ -331,7 +333,7 @@ function [cost]= computeCostWithReg(weights, AL, Y, lambd, outputActivationFunc=
         L = size(weights)(2);
         L2RegularizationCost=0;
         for l=1:L
-
+            # Compute L2 Norm
             wtSqr = weights{l} .* weights{l};
             #disp(sum(sum(wtSqr,1)));
             L2RegularizationCost+=sum(sum(wtSqr,1));
@@ -503,8 +505,11 @@ function [gradsDA gradsDW gradsDB]= backwardPropagationDeep(AL, Y, activation_ca
         # dAl the dervative of the activation of the lth layer,is the first element
         dAl= gradsDA{l+1};
         if(lambd == 0)
-           D = dropoutMat{l};         
-           dAl= dAl .* D;                                          
+           # Get the dropout mat
+           D = dropoutMat{l};    
+           #Multiply by the dropoutMat     
+           dAl= dAl .* D;       
+           # Divide by keep_prob to keep expected value same           
            dAl = dAl ./ keep_prob; 
            [dA_prev_temp, dW_temp, db_temp] = layerActivationBackward(dAl, forward_cache{1}, activation_cache, Y, activationFunc = hiddenActivationFunc,numClasses);
         else 

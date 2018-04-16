@@ -286,11 +286,13 @@ forwardPropagationDeep <- function(X, parameters,keep_prob=1, hiddenActivationFu
     a<-rnorm(i*j)
     # Normalize a between 0 and 1
     a = (a - min(a))/(max(a) - min(a))
-    #print(keep_prob)
+    # Create a matrix of D
     D <- matrix(a,nrow=i, ncol=j)
-    D <- D <= keep_prob
-    #print(sum(D))
+    # Find D which is less than equal to keep_prob
+    D <- D < keep_prob
+    # Remove some A's
     A <- A * D
+    # Divide by keep_prob to keep expected value same
     A <- A/keep_prob
     dropoutMat[[paste("D",l,sep="")]] <- D
   }
@@ -389,6 +391,7 @@ computeCostWithReg <- function(parameters, AL,Y,lambd, outputActivationFunc="sig
         # Regularization cost
         L <- length(parameters)/2
         L2RegularizationCost=0
+        # Add L2 norm
         for(l in 1:L){
             L2RegularizationCost = L2RegularizationCost + 
                 sum(parameters[[paste("W",l,sep="")]]^2)
@@ -396,7 +399,6 @@ computeCostWithReg <- function(parameters, AL,Y,lambd, outputActivationFunc="sig
         L2RegularizationCost = (lambd/(2*m))*L2RegularizationCost   
         cost = cost +  L2RegularizationCost
     }
-    #cost=-1/m*sum(a+b)
     return(cost)
 }
 
@@ -561,8 +563,11 @@ backwardPropagationDeep <- function(AL, Y, caches,dropoutMat, lambd=0, keep_prob
     # Outputs: "gradients["dA" + str(l + 1)] , gradients["dW" + str(l + 1)] , gradients["db" + str(l + 1)] 
     current_cache = caches[[l]]$cache
     if (lambd==0){
+        # Get the dropout matrix
         D <-dropoutMat[[paste("D",l,sep="")]]
+        # Multiply gradient with dropout matrix
         gradients[[paste('dA',l+1,sep="")]] = gradients[[paste('dA',l+1,sep="")]] *D
+        # Divide by keep_prob to keep expected value same
         gradients[[paste('dA',l+1,sep="")]] = gradients[[paste('dA',l+1,sep="")]]/keep_prob
         retvals = layerActivationBackward(gradients[[paste('dA',l+1,sep="")]], 
                                       current_cache, Y,
