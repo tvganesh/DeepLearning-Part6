@@ -613,10 +613,10 @@ gradientDescent  <- function(parameters, gradients, learningRate,outputActivatio
       learningRate* gradients[[paste("db",L,sep="")]] 
     
   }else if (outputActivationFunc=="softmax"){
-    parameters[[paste("W",l,sep="")]] = parameters[[paste("W",l,sep="")]] -
-      learningRate* gradients[[paste("dW",l,sep="")]]
-    parameters[[paste("b",l,sep="")]] = parameters[[paste("b",l,sep="")]] -
-      learningRate* gradients[[paste("db",l,sep="")]]
+    parameters[[paste("W",L,sep="")]] = parameters[[paste("W",L,sep="")]] -
+      learningRate* t(gradients[[paste("dW",L,sep="")]])
+    parameters[[paste("b",L,sep="")]] = parameters[[paste("b",L,sep="")]] -
+      learningRate* t(gradients[[paste("db",L,sep="")]])
   }
   return(parameters)
 }
