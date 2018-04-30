@@ -18,12 +18,22 @@ sigmoid <- function(Z){
   
 }
 
-# Compute the Relu of a vector
-relu   <-function(Z){
+# Compute the Relu(old) of a vector
+reluOld   <-function(Z){
   A <- apply(Z, 1:2, function(x) max(0,x))
   cache<-Z
   retvals <- list("A"=A,"Z"=Z)
   return(retvals)
+}
+
+# Compute the Relu of a vector
+relu   <-function(Z){
+    # Perform relu. Set values less that equal to 0 as 0
+    Z[Z<0]=0
+    A=Z
+    cache<-Z
+    retvals <- list("A"=A,"Z"=Z)
+    return(retvals)
 }
 
 # Compute the tanh activation of a vector
