@@ -389,7 +389,7 @@ def layerActivationBackwardWithReg(dA, cache, Y, lambd, activationFunc):
     if activationFunc == 'softmax':
         # Add the regularization factor
         dW = 1/numtraining * np.dot(A_prev,dZ) +  (lambd/numtraining) * W.T
-        db = np.sum(dZ, axis=0, keepdims=True)
+        db = 1/numtraining * np.sum(dZ, axis=0, keepdims=True)
         dA_prev = np.dot(dZ,W)
     else:
         # Add the regularization factor
