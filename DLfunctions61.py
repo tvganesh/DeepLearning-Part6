@@ -191,7 +191,7 @@ def XavInitializeDeepModel(layerDimensions):
 #         : 
 # Z = W * X + b
 # A = sigmoid(Z), A= Relu(Z), A= tanh(Z)
-def layerActivationForward(A_prev, W, b, keep_prob=0, activationFunc="relu"):
+def layerActivationForward(A_prev, W, b, keep_prob=1, activationFunc="relu"):
     
     # Compute Z
     Z = np.dot(W,A_prev) + b
@@ -219,7 +219,7 @@ def layerActivationForward(A_prev, W, b, keep_prob=0, activationFunc="relu"):
 # Returns : AL 
 #           caches
 # The forward propoagtion uses the Relu/tanh activation from layer 1..L-1 and sigmoid actiovation at layer L
-def forwardPropagationDeep(X, parameters,keep_prob=0, hiddenActivationFunc='relu',outputActivationFunc='sigmoid'):
+def forwardPropagationDeep(X, parameters,keep_prob=1, hiddenActivationFunc='relu',outputActivationFunc='sigmoid'):
     caches = []
     #initialize the dropout matrix
     dropoutMat = {}
@@ -330,7 +330,7 @@ def computeCostWithReg(parameters,AL,Y,lambd, outputActivationFunc="sigmoid"):
 # dL/dWi= dL/dZi*Al-1
 # dl/dbl = dL/dZl
 # dL/dZ_prev=dL/dZl*W
-def layerActivationBackward(dA, cache, Y, keep_prob=0, activationFunc="relu"):
+def layerActivationBackward(dA, cache, Y, keep_prob=1, activationFunc="relu"):
     forward_cache, activation_cache = cache
     A_prev, W, b = forward_cache
     numtraining = float(A_prev.shape[1])
@@ -347,7 +347,7 @@ def layerActivationBackward(dA, cache, Y, keep_prob=0, activationFunc="relu"):
   
     if activationFunc == 'softmax':
         dW = 1/numtraining * np.dot(A_prev,dZ)
-        db = np.sum(dZ, axis=0, keepdims=True)
+        db = 1/numtraining * np.sum(dZ, axis=0, keepdims=True)
         dA_prev = np.dot(dZ,W)
         
 
@@ -417,7 +417,7 @@ def layerActivationBackwardWithReg(dA, cache, Y, lambd, activationFunc):
 #                 gradients["dA" + str(l)] = ... 
 #                 gradients["dW" + str(l)] = ...
 
-def backwardPropagationDeep(AL, Y, caches, dropoutMat, lambd=0, keep_prob=0, hiddenActivationFunc='relu',outputActivationFunc="sigmoid"):
+def backwardPropagationDeep(AL, Y, caches, dropoutMat, lambd=0, keep_prob=1, hiddenActivationFunc='relu',outputActivationFunc="sigmoid"):
     #initialize the gradients
     gradients = {}
     # Set the number of layers
@@ -467,7 +467,7 @@ def backwardPropagationDeep(AL, Y, caches, dropoutMat, lambd=0, keep_prob=0, hid
            # Divide by keep_prob to keep expected value same                                
            gradients['dA'+str(l+2)] = np.divide(gradients['dA'+str(l+2)],keep_prob) 
            
-           dA_prev_temp, dW_temp, db_temp = layerActivationBackward(gradients['dA'+str(l+2)], current_cache, Y, keep_prob=0, activationFunc = hiddenActivationFunc) 
+           dA_prev_temp, dW_temp, db_temp = layerActivationBackward(gradients['dA'+str(l+2)], current_cache, Y, keep_prob=1, activationFunc = hiddenActivationFunc) 
            
         else:
             dA_prev_temp, dW_temp, db_temp = layerActivationBackwardWithReg(gradients['dA'+str(l+2)], current_cache, Y, lambd, activationFunc = hiddenActivationFunc)
